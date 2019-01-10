@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CT Colored Welcome Message Tool</title>
+
+<style type="text/css">
+.head_text {
+    font-family: 'Arial';
+    font-weight: bold;
+    letter-spacing: -0.9px;
+    font-size:18px;
+    color: #111;
+    text-transform: uppercase;
+}
+
+input[type=text] {
+    border: 1px solid #999;
+    border-radius:3px;
+}
+
+input[type=text]:hover {
+    border: 1px solid #ccc;
+    border-radius:3px;
+}
+
+input[type=button] {
+    text-shadow: 0px 0px 1px black;
+    text-align:center;
+}
+
+.text {
+    border:1px solid #999;
+    width:100%;
+    border-radius:3px;
+    font-family:'Arial';
+    font-size:16px;
+}
+</style>
+
+<script type="text/javascript">
+function addColor(color) {
+    var sel, range;
+    if(document.getElementById('color_text').innerHTML.length > 55){
+                alert('The welcome message must be 64 or less characters!');
+                return;
+    }
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.insertNode(document.createTextNode(color.toUpperCase()));
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        range.text = color.toUpperCase() + range.text;
+    }
+    document.getElementById('length').innerHTML = document.getElementById('color_text').innerHTML.length + " characters";
+    if(document.getElementById('color_text').innerHTML.length > 64){
+        document.getElementById('length').style.color = 'red';
+    }else{
+        document.getElementById('length').style.color = 'black';
+    }
+}
+
+function delSelection(){
+    if(window.getSelection){
+        var sel = window.getSelection();
+        if (sel.rangeCount){
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        range.text = '';
+    }
+    document.getElementById('length').innerHTML = document.getElementById('color_text').innerHTML.length + " characters";
+    if(document.getElementById('color_text').innerHTML.length > 64){
+        document.getElementById('length').style.color = 'red';
+    }else{
+        document.getElementById('length').style.color = 'black';
+    }
+    
+    
+}
+
+function previewWelMsg(){
+    var text = document.getElementById('color_text').innerHTML;
+    var previewStr = "* Transport Tycoon USERNAME connected: " + text;
+    var colorArray = text.split("{");
+    var colorEndArray;
+    var spanCount = 0;
+    
+    for(x in colorArray){
+        var tmp = colorArray[x].split("}");
+        if(tmp[0].length == 6 && regColorcode.test(tmp[0]) == true){
+            var spanTmp = "<span style='color:#" + tmp[0] + ";'>";
+            spanCount++;
+            previewStr = previewStr.replace("{" + tmp[0] + "}",spanTmp);
+        }else if(regColorcode.test(tmp[0]) == false){
+            previewStr = previewStr.replace("{" + tmp[0] + "}",'');
+        }
+    }
+    
+    for(i=0;i<spanCount;i++){
+        previewStr = previewStr + "</span>";
+    }
+    document.getElementById('preview').innerHTML = previewStr;
+}
+
+function htmlentities(str){
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+var regColorcode = /^(#)?([0-9a-fA-F]{6})?$/;
+</script>
+</head>
+
+<body style="text-align:center;">
+<div id="first_step">
+<div class="head_text">Enter your welcome message here</div>
+<input type="text" id="original_welcome_message" maxlength=64 autocomplete="off" value="enter your welcome message here" style="color: #ccc; text-align:center; width:100%;" onclick="this.value = ''; this.style.color = 'black'; document.getElementById('next_step_1').disabled = ''; this.onclick = '';" />
+<input type="button" disabled="disabled" value="To the next step" id="next_step_1" style="width:100%;" onclick="document.getElementById('color_text').innerHTML = htmlentities(document.getElementById('original_welcome_message').value); document.getElementById('first_step').style.display = 'none'; document.getElementById('second_step').style.display = 'block'; document.getElementById('length').innerHTML = document.getElementById('color_text').innerHTML.length + ' characters'; if(document.getElementById('color_text').innerHTML.length > 64){ document.getElementById('length').style.color = 'red'; }else{ document.getElementById('length').style.color = 'black'; }" />
+<hr />
+</div>
+<div id="second_step" style="display:none;">
+<div class="head_text">To color text, click before the text you want to color and click a color button</div>
+<div>To use in-game, select and copy (ctrl+c) the text in box below, then go in-game, type <i>/preferences</i>, click 'welcome message' and then the text into the dialog box that appears.</div>
+<div>The text below must be 64 characters or less. Current length: <span id="length">0 characters</span></div>
+<div class="text" style="color:black; letter-spacing:1px;" id='color_text'>&nbsp;</div>
+<input type="button" value="BLACK" onclick="addColor('{000000}');" style="color: #000;" /><input type="button" value="RED" onclick="addColor('{ff0000}');" style="color: #f00;" /><input type="button" value="GREEN" onclick="addColor('{00ff00}');" style="color: #0F0;" /><input type="button" value="BLUE" onclick="addColor('{0000ff}');" style="color: #00F;" /><input type="button" value="YELLOW" onclick="addColor('{ffff00}');" style="color: yellow;" /><input type="button" value="PINK" onclick="addColor('{FFC0CB}');" style="color: pink;" /><input type="button" value="ORANGE" onclick="addColor('{FFA500}');" style="color: orange;" /><input type="button" value="PURPLE" onclick="addColor('{800080}');" style="color: purple;" /><input type="button" value="BEIGE" onclick="addColor('{F5F5DC}');" style="color: beige;" /><input type="button" value="BROWN" onclick="addColor('{A52A2A}');" style="color: brown;" /><input type="button" onclick="addColor('{008080}');" value="TEAL" style="color: teal;" /><input type="button" onclick="addColor('{000080}');" value="NAVY" style="color: navy;" /><input type="button" value="MAROON" onclick="addColor('{800000}');" style="color: maroon;" /><input type="button" onclick="addColor('{32CD32}');" value="LIME GREEN" style="color: limegreen;" /><input type="button" value="WHITE" onclick="addColor('{ffffff}');" style="color: white;" /><br />Custom color (HTML Hex code): <input onchange="if(this.value.length == 6 && regColorcode.test(this.value) == true){document.getElementById('customcolorsubmit').style.color = '#' + this.value;}" style="width:60px;" type="text" maxlength=6 id="customcolor" /><input type="button" value="Insert custom color" id="customcolorsubmit" onclick="if(document.getElementById('customcolor').value.length == 6 && regColorcode.test(document.getElementById('customcolor').value) == true){addColor('{' + document.getElementById('customcolor').value + '}');}else{alert('Your custom color needs to be a HTML hex color, 6 characters long.'); }" /><input type="button" value="delete selected text" onclick="delSelection();" />
+<input type="button" value="Preview welcome message" id="next_step_2" style="width:100%;" onclick="previewWelMsg();" />
+
+<div class="head_text">Preview:</div>
+<div class="text" style="color:#999; font-weight:bold;text-shadow:1px 1px 0px black, -1px 1px 0px black, 1px -1px 0px black, -1px -1px 0px black; font-size:16px;" id='preview'>&nbsp;</div>
+</div>
+</body>
+
+</html>
